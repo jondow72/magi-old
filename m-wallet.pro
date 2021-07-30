@@ -1,40 +1,16 @@
 TEMPLATE = app
 TARGET = m-wallet
-macx:TARGET = "m-wallet"
-VERSION = 1.4.0
+VERSION = 1.4.7.2
 INCLUDEPATH += src src/json src/qt
-DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE
+DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE BOOST_THREAD_PROVIDES_GENERIC_SHARED_MUTEX_ON_WIN __NO_SYSTEM_INCLUDES
 CONFIG += no_include_pwd
 CONFIG += thread
-CONFIG += static
-QT += core gui network
-greaterThan(QT_MAJOR_VERSION, 4) {
-    QT += widgets
-}
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+lessThan(QT_MAJOR_VERSION, 5): CONFIG += static
 
-# for boost > 1.37, add -mt to the boost libraries
-# use: qmake BOOST_LIB_SUFFIX=-mt
-# for boost thread win32 with _win32 sufix
-# use: BOOST_THREAD_LIB_SUFFIX=_win32-...
-# when linking against a specific BerkelyDB version: BDB_LIB_SUFFIX=-4.8
+# UNCOMMENT THIS SECTION TO BUILD ON WINDOWS
+# Change paths if needed, these use the foocoin/deps.git repository locations
 
-# Dependency library locations can be customized using following settings 
-# winbuild dependencies
-win32 {
-#    BOOST_LIB_SUFFIX=-mgw49-mt-s-1_58
-    BOOST_INCLUDE_PATH=$$DEPSDIR/boost_1_58_0
-    BOOST_LIB_PATH=$$DEPSDIR/boost_1_58_0/stage/lib
-    BDB_INCLUDE_PATH=$$DEPSDIR/db-4.8.30.NC/build_unix
-    BDB_LIB_PATH=$$DEPSDIR/db-4.8.30.NC/build_unix
-    OPENSSL_INCLUDE_PATH=$$DEPSDIR/openssl-1.0.2j/include
-    OPENSSL_LIB_PATH=$$DEPSDIR/openssl-1.0.2j
-    MINIUPNPC_INCLUDE_PATH=$$DEPSDIR/miniupnpc
-    MINIUPNPC_LIB_PATH=$$DEPSDIR/miniupnpc
-    QRENCODE_INCLUDE_PATH=$$DEPSDIR/qrencode-3.4.3
-    QRENCODE_LIB_PATH=$$DEPSDIR/qrencode-3.4.3/.libs
-    GMP_INCLUDE_PATH=$$DEPSDIR/gmp-6.0.0
-    GMP_LIB_PATH=$$DEPSDIR/gmp-6.0.0/.libs
-}
 
 OBJECTS_DIR = build
 MOC_DIR = build
@@ -42,8 +18,8 @@ UI_DIR = build
 
 # use: qmake "RELEASE=1"
 contains(RELEASE, 1) {
-    # Mac: compile for maximum compatibility (10.5, 64-bit)
-    macx:QMAKE_CXXFLAGS += -mmacosx-version-min=10.5 -arch x86_64 -isysroot $(xcode-select --print-path)/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.5.sdk
+    # Mac: compile for maximum compatibility (10.5, 32-bit)
+    macx:QMAKE_CXXFLAGS += -mmacosx-version-min=10.7 -arch x86_64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk
 
     !windows:!macx {
         # Linux: static link
@@ -59,9 +35,7 @@ QMAKE_LFLAGS *= -fstack-protector-all --param ssp-buffer-size=1
 # This can be enabled for Windows, when we switch to MinGW >= 4.4.x.
 }
 # for extra security on Windows: enable ASLR and DEP via GCC linker flags
-#win32:QMAKE_LFLAGS *= -Wl,--dynamicbase -Wl,--nxcompat -Wl,--large-address-aware -static
-win32:QMAKE_LFLAGS *= -Wl,--dynamicbase -Wl,--nxcompat -static
-win32:QMAKE_LFLAGS += -static-libgcc -static-libstdc++
+win32:QMAKE_LFLAGS *= -Wl,--dynamicbase -Wl,--nxcompat
 
 # use: qmake "USE_QRCODE=1"
 # libqrencode (http://fukuchi.org/works/qrencode/index.en.html) must be installed for support
@@ -82,7 +56,7 @@ contains(USE_UPNP, -) {
     count(USE_UPNP, 0) {
         USE_UPNP=1
     }
-    DEFINES += USE_UPNP=$$USE_UPNP STATICLIB
+    DEFINES += USE_UPNP=$$USE_UPNP STATICLIB MINIUPNP_STATICLIB
     INCLUDEPATH += $$MINIUPNPC_INCLUDE_PATH
     LIBS += $$join(MINIUPNPC_LIB_PATH,,-L,) -lminiupnpc
     win32:LIBS += -liphlpapi
@@ -114,6 +88,9 @@ contains(BITCOIN_NEED_QT_PLUGINS, 1) {
     QTPLUGIN += qcncodecs qjpcodecs qtwcodecs qkrcodecs qtaccessiblewidgets
 }
 
+message(Building with LevelDB)
+DEFINES += USE_LEVELDB
+
 INCLUDEPATH += src/leveldb/include src/leveldb/helpers
 LIBS += $$PWD/src/leveldb/libleveldb.a $$PWD/src/leveldb/libmemenv.a
 SOURCES += src/txdb.cpp \
@@ -137,7 +114,6 @@ SOURCES += src/txdb.cpp \
     LIBS += -lshlwapi
     genleveldb.commands = cd $$PWD/src/leveldb && CC=$$QMAKE_CC CXX=$$QMAKE_CXX TARGET_OS=OS_WINDOWS_CROSSCOMPILE $(MAKE) OPT=\"$$QMAKE_CXXFLAGS $$QMAKE_CXXFLAGS_RELEASE\" libleveldb.a libmemenv.a && $$QMAKE_RANLIB $$PWD/src/leveldb/libleveldb.a && $$QMAKE_RANLIB $$PWD/src/leveldb/libmemenv.a
 }
-
 genleveldb.target = $$PWD/src/leveldb/libleveldb.a
 genleveldb.depends = FORCE
 PRE_TARGETDEPS += $$PWD/src/leveldb/libleveldb.a
@@ -145,8 +121,9 @@ QMAKE_EXTRA_TARGETS += genleveldb
 # Gross ugly hack that depends on qmake internals, unfortunately there is no other way to do it.
 QMAKE_CLEAN += $$PWD/src/leveldb/libleveldb.a; cd $$PWD/src/leveldb ; $(MAKE) clean
 
+
 # regenerate src/build.h
-!windows|contains(USE_BUILD_INFO, 1) {
+contains(USE_BUILD_INFO, 1) {
     genbuild.depends = FORCE
     genbuild.commands = cd $$PWD; /bin/sh share/genbuild.sh $$OUT_PWD/build/build.h
     genbuild.target = $$OUT_PWD/build/build.h
@@ -156,14 +133,14 @@ QMAKE_CLEAN += $$PWD/src/leveldb/libleveldb.a; cd $$PWD/src/leveldb ; $(MAKE) cl
 }
 
 # If we have an ARM device, we can't use SSE2 instructions, so don't try to use them
-QMAKE_XCPUARCH = $$QMAKE_HOST.arch
-equals(QMAKE_XCPUARCH, armv7l) {
+CPU = $$QMAKE_HOST.arch
+equals(CPU, aarch64) {
     message(Building without SSE2 support)
 }
-else:equals(QMAKE_XCPUARCH, armv6l) {
+else:equals(CPU, armv7l) {
     message(Building without SSE2 support)
 }
-else:equals(QMAKE_XCPUARCH, aarch64) {
+else:equals(CPU, armv6l) {
     message(Building without SSE2 support)
 }
 else {
@@ -352,30 +329,32 @@ FORMS += \
     src/qt/forms/console.ui \
     src/qt/forms/helpmessagedialog.ui
 
+QT += network
+
 contains(USE_QRCODE, 1) {
-HEADERS += src/qt/qrcodedialog.h
-SOURCES += src/qt/qrcodedialog.cpp
-FORMS += src/qt/forms/qrcodedialog.ui
+    HEADERS += src/qt/qrcodedialog.h
+    SOURCES += src/qt/qrcodedialog.cpp
+    FORMS += src/qt/forms/qrcodedialog.ui
 }
 
 contains(BITCOIN_QT_TEST, 1) {
-SOURCES += src/qt/test/test_main.cpp \
-    src/qt/test/uritests.cpp
-HEADERS += src/qt/test/uritests.h
-DEPENDPATH += src/qt/test
-QT += testlib
-TARGET = m-wallet_test
-DEFINES += BITCOIN_QT_TEST
+    SOURCES += src/qt/test/test_main.cpp \
+        src/qt/test/uritests.cpp
+    HEADERS += src/qt/test/uritests.h
+    DEPENDPATH += src/qt/test
+    QT += testlib
+    TARGET = m-wallet_test
+    DEFINES += BITCOIN_QT_TEST
 }
 
 CODECFORTR = UTF-8
 
 # for lrelease/lupdate
-# also add new translations to src/qt/magi.qrc under translations/
+# also add new translations to src/qt/bitcoin.qrc under translations/
 TRANSLATIONS = $$files(src/qt/locale/bitcoin_*.ts)
 
 isEmpty(QMAKE_LRELEASE) {
-    win32:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]\\lrelease.exe
+    win32:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]/lrelease
     else:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]/lrelease
 }
 isEmpty(QM_DIR):QM_DIR = $$PWD/src/qt/locale
@@ -399,24 +378,25 @@ OTHER_FILES += README.md \
 
 # platform specific defaults, if not overridden on command line
 isEmpty(BOOST_LIB_SUFFIX) {
-    macx:BOOST_LIB_SUFFIX = -mt-s
-    windows:BOOST_LIB_SUFFIX = -mgw49-mt-s-1_58
+    macx:BOOST_LIB_SUFFIX = -mt
+    windows:BOOST_LIB_SUFFIX = -mt
 }
 
 isEmpty(BOOST_THREAD_LIB_SUFFIX) {
     BOOST_THREAD_LIB_SUFFIX = $$BOOST_LIB_SUFFIX
+    windows:BOOST_THREAD_LIB_SUFFIX = _win32-mt
 }
 
 isEmpty(BDB_LIB_PATH) {
-    macx:BDB_LIB_PATH = /opt/local/lib/db48
+    macx:BDB_LIB_PATH = /opt/local/lib/db53
 }
 
 isEmpty(BDB_LIB_SUFFIX) {
-    macx:BDB_LIB_SUFFIX = -4.8
+    macx:BDB_LIB_SUFFIX = -5.3
 }
 
 isEmpty(BDB_INCLUDE_PATH) {
-    macx:BDB_INCLUDE_PATH = /opt/local/include/db48
+    macx:BDB_INCLUDE_PATH = /opt/local/include/db53
 }
 
 isEmpty(BOOST_LIB_PATH) {
@@ -428,6 +408,7 @@ isEmpty(BOOST_INCLUDE_PATH) {
 }
 
 windows:DEFINES += WIN32
+windows:DEFINES += _WINDOWS
 windows:RC_FILE = src/qt/res/magi-qt.rc
 
 windows:!contains(MINGW_THREAD_BUGFIX, 0) {
@@ -446,12 +427,15 @@ windows:!contains(MINGW_THREAD_BUGFIX, 0) {
     LIBS += -lrt
 }
 
-macx:HEADERS += src/qt/macdockiconhandler.h src/qt/macnotificationhandler.h
-macx:OBJECTIVE_SOURCES += src/qt/macdockiconhandler.mm src/qt/macnotificationhandler.mm
-macx:LIBS += -framework Foundation -framework ApplicationServices -framework AppKit -framework CoreServices
+macx:HEADERS += src/qt/macdockiconhandler.h \
+                src/qt/macnotificationhandler.h
+macx:OBJECTIVE_SOURCES += src/qt/macdockiconhandler.mm \
+                src/qt/macnotificationhandler.mm
+macx:LIBS += -framework Foundation -framework ApplicationServices -framework AppKit
 macx:DEFINES += MAC_OSX MSG_NOSIGNAL=0
 macx:ICON = src/qt/res/icons/magi.icns
-macx:QMAKE_CFLAGS_THREAD += -pthread
+macx:TARGET = "m-wallet"
+macx:QMAKE_CFLAGS_THREAD += -pthread -no-integrated-as
 macx:QMAKE_LFLAGS_THREAD += -pthread
 macx:QMAKE_CXXFLAGS_THREAD += -pthread
 
@@ -461,7 +445,7 @@ LIBS += $$join(OPT_LIB_PATH,,-L,) $$join(BOOST_LIB_PATH,,-L,) $$join(BDB_LIB_PAT
 LIBS += -lssl -lgmp -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
 LIBS += $$OPT_LIBS
 # -lgdi32 has to happen after -lcrypto (see  #681)
-windows:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32
+windows:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32 -lpthread
 LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX -lboost_chrono$$BOOST_LIB_SUFFIX
 windows:LIBS += -lboost_chrono$$BOOST_LIB_SUFFIX
 
@@ -472,4 +456,4 @@ contains(RELEASE, 1) {
     }
 }
 
-system($$QMAKE_LRELEASE -silent $$TRANSLATIONS)
+system($$QMAKE_LRELEASE -silent $$_PRO_FILE_)

@@ -5,6 +5,7 @@
 #include "magirpc.h"
 #include "guiutil.h"
 #include "guiconstants.h"
+#include <pthread.h>
 #include <db_cxx.h>
 
 #include <QTime>

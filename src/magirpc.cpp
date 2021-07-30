@@ -28,6 +28,12 @@
 
 #define printf OutputDebugStringF
 
+#if BOOST_VERSION >= 107000
+#define IO_SERVICE(s) ((boost::asio::io_context&)(s).get_executor().context())
+#else
+#define IO_SERVICE(s) ((s).get_io_service())
+#endif
+
 using namespace std;
 using namespace boost;
 using namespace boost::asio;
@@ -575,7 +581,7 @@ public:
     bool connect(const std::string& server, const std::string& port)
     {
 #if BOOST_VERSION >= 106600
-        ip::tcp::resolver resolver(GetIOService(stream));
+        ip::tcp::resolver resolver(IO_SERVICE(stream));
 #else
         ip::tcp::resolver resolver(stream.get_io_service());
 #endif
@@ -703,7 +709,7 @@ static void RPCListen(boost::shared_ptr< basic_socket_acceptor<Protocol, SocketA
 #if BOOST_VERSION >= 106600
     AcceptedConnectionImpl<Protocol>* conn = new AcceptedConnectionImpl<Protocol>(GetIOServiceFromPtr(acceptor), context, fUseSSL);
 #else
-    AcceptedConnectionImpl<Protocol>* conn = new AcceptedConnectionImpl<Protocol>(acceptor->get_io_service(), context, fUseSSL);
+    AcceptedConnectionImpl<Protocol>* conn = new AcceptedConnectionImpl<Protocol>(IO_SERVICE(*acceptor), context, fUseSSL);
 #endif
 
     acceptor->async_accept(
