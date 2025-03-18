@@ -438,3 +438,4 @@ void OverviewPage::checkForUpdates()
     }
 
     labelUpdateStatus->setText(isUpToDate ? "Client is up to date" : "Update available");
+}
