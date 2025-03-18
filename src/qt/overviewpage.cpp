@@ -414,31 +414,27 @@ void OverviewPage::updateValues()
     labelPriceInUSD->setText(BitcoinUnits::format(0, priceInfo->getPriceInUSD()*100000000, false) + QString(" USD/XMG"));
 }
 
+
 void OverviewPage::checkForUpdates()
 {
-    // Grab the internal wallet version and the online version string
     QString qsCurrentClientVersion(m_pUpdCtrl->downloadedData());
-    QString report = QString("Client is up to date");
+    qDebug() << "Online version string:" << qsCurrentClientVersion;
 
-    // Split the online version string and compare it against the internal version
-    // If at any point we find that the internal version is less than the online
-    // version, exit without setting bool isUpToDate. If the internal version is
-    // equal to or greater than the online version, set isUpToDate = true.
-    bool isUpToDate = true;
     unsigned int nVersion = m_pUpdCtrl->parseClientVersion(qsCurrentClientVersion.toStdString(), '.');
-    if (nVersion > GetClientVersion(CLIENT_VERSION, CLIENT_VERSION_RELEASE_CANDIDATE))
+    qDebug() << "Parsed online version:" << nVersion;
+
+    unsigned int currentVersion = GetClientVersion(CLIENT_VERSION, CLIENT_VERSION_RELEASE_CANDIDATE);
+    qDebug() << "Internal client version:" << currentVersion;
+
+    bool isUpToDate = true;
+    if (nVersion > currentVersion)
         isUpToDate = false;
 
-    // If versions are the same, remove the update section, otherwise make sure
-    // it is visible and show a link to the wallet download site
     if (isUpToDate) {
         showUpdateLayout(false);
     } else {
-        report = QString(_UPDATE_DOWNLOAD_URL);
-        report = QString("<a href=\"" + report + "\">v" + qsCurrentClientVersion + " available</a>");
+        QString report = QString("<a href=\"" + QString(_UPDATE_DOWNLOAD_URL) + "\">v" + qsCurrentClientVersion + " available</a>");
         showUpdateLayout(true);
     }
 
-    // Set the update label text and exit
-    labelUpdateStatus->setText(report);
-}
+    labelUpdateStatus->setText(isUpToDate ? "Client is up to date" : "Update available");
