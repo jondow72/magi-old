@@ -17,7 +17,7 @@
 
 // Version before stable release: ALPHA1 ~ ALPHA3, BETA1 ~ BETA3, RC1 ~ RC3
 // Set to "STABLE" for stable release
-#define CLIENT_VERSION_RELEASE_CANDIDATE "RC1"
+#define CLIENT_VERSION_RELEASE_CANDIDATE "STABLE"
 
 /**
  * Copyright year (2009-this)
