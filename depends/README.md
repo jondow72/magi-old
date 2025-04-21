@@ -12,21 +12,11 @@ For example:
 
     make HOST=x86_64-w64-mingw32 -j4
 
-**Bitcoin Core's `configure` script by default will ignore the depends output.** In
-order for it to pick up libraries, tools, and settings from the depends build,
-you must set the `CONFIG_SITE` environment variable to point to a `config.site` settings file.
-In the above example, a file named `depends/x86_64-w64-mingw32/share/config.site` will be
-created. To use it during compilation:
-
-    CONFIG_SITE=$PWD/depends/x86_64-w64-mingw32/share/config.site ./configure
-
-The default install prefix when using `config.site` is `--prefix=depends/<host-platform-triplet>`,
-so depends build outputs will be installed in that location.
-
 Common `host-platform-triplet`s for cross compilation are:
 
 - `i686-pc-linux-gnu` for Linux 32 bit
 - `x86_64-pc-linux-gnu` for x86 Linux
+- `i686-w64-mingw32` for Win32
 - `x86_64-w64-mingw32` for Win64
 - `x86_64-apple-darwin` for macOS
 - `arm64-apple-darwin` for ARM macOS
@@ -41,34 +31,26 @@ Common `host-platform-triplet`s for cross compilation are:
 - `aarch64-linux-android` for Android ARM 64 bit
 - `x86_64-linux-android` for Android x86 64 bit
 
-The paths are automatically configured and no other options are needed unless targeting [Android](../doc/build-android.md).
-
-### Install the required dependencies: Ubuntu & Debian
-
-#### For macOS cross compilation
-
-    sudo apt-get install curl bsdmainutils cmake libz-dev python3-setuptools libtinfo5 xorriso
-
-Note: You must obtain the macOS SDK before proceeding with a cross-compile.
-Under the depends directory, create a subdirectory named `SDKs`.
-Then, place the extracted SDK under this new directory.
-For more information, see [SDK Extraction](../contrib/macdeploy/README.md#sdk-extraction).
 
 #### For Win64 cross compilation
 
-- see [build-windows.md](../doc/build-windows.md#cross-compilation-for-ubuntu-and-windows-subsystem-for-linux)
+- see [build-windows.md](../doc/build-windows.md)
 
-#### For linux (including i386, ARM) cross compilation
+#### For linux (including AMD64, ARM32 AARCH64) cross compilation
 
 Common linux dependencies:
 
     sudo apt-get install make automake cmake curl g++-multilib libtool binutils-gold bsdmainutils pkg-config python3 patch bison
 
-For linux ARM cross compilation:
+For linux ARM cross compilation: see [build-arm32.md](../doc/build-arm32.md)
 
     sudo apt-get install g++-arm-linux-gnueabihf binutils-arm-linux-gnueabihf
 
-For linux AARCH64 cross compilation:
+For linux AMD64 cross compilation: see [build-amd64.md](../doc/build-amd64.md)
+
+    sudo apt-get install g++-x86-64-linux-gnu binutils-x86-64-linux-gnu
+
+For linux AARCH64 cross compilation: see [build-aarch64.md](../doc/build-aarch64.md)
 
     sudo apt-get install g++-aarch64-linux-gnu binutils-aarch64-linux-gnu
 
