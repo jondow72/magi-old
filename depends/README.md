@@ -40,7 +40,7 @@ Common `host-platform-triplet`s for cross compilation are:
 
 Common linux dependencies:
 
-    sudo apt-get install make automake cmake curl g++-multilib gcc-multilib libtool binutils-gold bsdmainutils pkg-config python3 patch bison
+    sudo apt-get install make automake cmake curl g++-multilib gcc-multilib libtool binutils bsdmainutils pkg-config python3 patch bison
 
 For linux ARM cross compilation: see [build-arm32.md](../doc/build-arm32.md)
 

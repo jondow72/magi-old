@@ -5,7 +5,7 @@ The steps below can be performed on debian:
 
     sudo apt update
     sudo apt upgrade
-    sudo apt install build-essential autotools-dev xz-utils git make automake pkg-config cmake curl g++-multilib gcc-multilib libtool binutils-gold bsdmainutils pkg-config python3 patch bison
+    sudo apt install build-essential autotools-dev xz-utils git make automake pkg-config cmake curl g++-multilib gcc-multilib libtool binutils bsdmainutils pkg-config python3 patch bison
     sudo apt install g++-aarch64-linux-gnu binutils-aarch64-linux-gnu
     git clone https://github.com/magi-dev/magi.git
     cd magi
