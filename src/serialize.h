@@ -5,6 +5,7 @@
 #ifndef BITCOIN_SERIALIZE_H
 #define BITCOIN_SERIALIZE_H
 
+
 #include <string>
 #include <vector>
 #include <map>
