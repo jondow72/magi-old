@@ -143,7 +143,8 @@ define $(package)_stage_cmds
   $(MAKE) -C src INSTALL_ROOT=$($(package)_staging_dir) $(addsuffix -install_subtargets,$(addprefix sub-,$($(package)_qt_libs))) && cd .. &&\
   $(MAKE) -C qttools/src/linguist/lrelease INSTALL_ROOT=$($(package)_staging_dir) install_target && \
   $(MAKE) -C qttranslations INSTALL_ROOT=$($(package)_staging_dir) install_subtargets && \
-  cp -R ../../qt $(BASEDIR)/tmp && \
+  mkdir -p $(BASEDIR)/tmp && \
+  cp -r $($(package)_extract_dir)/* $(BASEDIR)/tmp && \
   if `test -f qtbase/src/plugins/platforms/xcb/xcb-static/libxcb-static.a`; then \
     cp qtbase/src/plugins/platforms/xcb/xcb-static/libxcb-static.a $($(package)_staging_prefix_dir)/lib; \
   fi
@@ -151,5 +152,8 @@ endef
 
 define $(package)_postprocess_cmds
   rm -rf mkspecs/ lib/cmake/ && \
-  rm lib/libQt5Bootstrap.a lib/lib*.la lib/*.prl plugins/*/*.prl
+  rm lib/libQt5Bootstrap.a lib/lib*.la lib/*.prl plugins/*/*.prl && \
+  mkdir -p $($(package)_extract_dir) && \
+  cp -r $(BASEDIR)/tmp/* $($(package)_extract_dir) && \
+  rm -rf $(BASEDIR)/tmp
 endef
