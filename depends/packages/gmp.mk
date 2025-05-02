@@ -11,7 +11,7 @@ define $(package)_preprocess_cmds
 endef
 
 define $(package)_set_vars
-  $(package)_config_opts=--disable-shared CC_FOR_BUILD=$(build_CC)
+  $(package)_config_opts=--disable-shared --enable-cxx CC_FOR_BUILD=$(build_CC)
   $(package)_config_opts_linux=--with-pic
   $(package)_config_opts_freebsd=--with-pic
   $(package)_config_opts_netbsd=--with-pic
