@@ -1,11 +1,13 @@
 package=gmp
-$(package)_version=6.2.1
+$(package)_version=6.0.0a
 $(package)_download_path=https://gmplib.org/download/gmp
 $(package)_file_name=$(package)-$($(package)_version).tar.bz2
-$(package)_sha256_hash=eae9326beb4158c386e39a356818031bd28f3124cf915f8c5b1dc4c7a36b4d7c
+$(package)_sha256_hash=7f8e9a804b9c6d07164cf754207be838ece1219425d64e28cfa3e70d5c759aaf
+$(package)_patches=arm_gmp_build_fix.patch darwin_gmp_build_fix.patch
 
 define $(package)_preprocess_cmds
-
+  patch -p1 < $($(package)_patch_dir)/arm_gmp_build_fix.patch && \
+  patch -p1 < $($(package)_patch_dir)/darwin_gmp_build_fix.patch
 endef
 
 define $(package)_set_vars
