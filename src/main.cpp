@@ -3826,28 +3826,28 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         CAddress addrFrom;
         uint64 nNonce = 1;
         vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime >> addrMe;
-        if (pfrom->nVersion < MIN_PROTO_VERSION) 
-        {
-            // earlier versions are no longer supported
-            printf("partner %s using obsolete version %i; disconnecting\n", pfrom->addr.ToString().c_str(), pfrom->nVersion);
-            pfrom->fDisconnect = true;
-            return false;
-        }
+//        if (pfrom->nVersion < MIN_PROTO_VERSION) 
+//        {
+//            // earlier versions are no longer supported
+//            printf("partner %s using obsolete version %i; disconnecting\n", pfrom->addr.ToString().c_str(), pfrom->nVersion);
+//            pfrom->fDisconnect = true;
+//            return false;
+//        }
 
-        if (pfrom->nVersion == 10300)
-            pfrom->nVersion = 300;
-        if (!vRecv.empty())
+//        if (pfrom->nVersion == 10300)
+//            pfrom->nVersion = 300;
+//        if (!vRecv.empty())
             vRecv >> addrFrom >> nNonce;
-        if (!vRecv.empty())
+//        if (!vRecv.empty())
             vRecv >> pfrom->strSubVer;
-        if (!vRecv.empty())
+//        if (!vRecv.empty())
             vRecv >> pfrom->nStartingHeight;
 
-        if (pfrom->fInbound && addrMe.IsRoutable())
-        {
+//        if (pfrom->fInbound && addrMe.IsRoutable())
+//        {
             pfrom->addrLocal = addrMe;
             SeenLocal(addrMe);
-        }
+//        }
 
         // Disconnect if we connected to ourself
         if (nNonce == nLocalHostNonce && nNonce > 1)
