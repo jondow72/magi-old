@@ -5,6 +5,9 @@
 #ifndef BITCOIN_NET_H
 #define BITCOIN_NET_H
 
+extern int MIN_PROTO_VERSION;
+extern std::mutex minProtoVersionMutex;
+
 #include <deque>
 #include <boost/array.hpp>
 #include <boost/foreach.hpp>
