@@ -3832,7 +3832,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime >> addrMe;
         {
             std::lock_guard<std::mutex> lock(minProtoVersionMutex); // Thread-safe modification
-            if (pfrom->nVersion > PEERCOIN_PROTO_VERSION) 
+            if (pfrom->nVersion > PROTOCOL_VERSION) 
             {
                 MIN_PROTO_VERSION = 209;
             } 
