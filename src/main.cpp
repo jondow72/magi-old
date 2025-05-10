@@ -19,7 +19,7 @@
 #include <boost/filesystem/fstream.hpp>
 #include <mutex>
 
-int MIN_PROTO_VERSION = 209; // Default value
+int MIN_PROTO_VERSION = 71064; // Default value
 std::mutex minProtoVersionMutex;
 
 using namespace std;
