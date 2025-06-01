@@ -1155,6 +1155,8 @@ void MapPort()
 
 // DNS seeds
 static const char *strMainNetDNSSeed[] = {
+    "magi-seed.checkbug.com",
+    "magi-seed.xmg.network",
     "seed.m-core.org",
     "seed.m-chain.info",
     "seed.magi.filoozom.com",
@@ -1162,6 +1164,8 @@ static const char *strMainNetDNSSeed[] = {
 };
 
 static const char *strTestNetDNSSeed[] = {
+    "test-magi-seed.checkbug.com",
+    "test-magi-seed.xmg.network",
     "test-seed.m-core.org",
     "test-seed.m-chain.info",
     "test-seed.magi.filoozom.com",
@@ -1225,7 +1229,7 @@ void ThreadDNSAddressSeed2(void* parg)
 }
 
 unsigned int pnSeed[] = {
-    0xD7E18068, 0x49FB232D
+    0x57d4304a, 0x2d9307a5, 0x54f78eee, 0xa9ef1106
 };
 
 
