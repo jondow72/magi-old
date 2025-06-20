@@ -398,8 +398,8 @@ namespace Checkpoints
 }
 
 // snc-checkpoint keys
-const std::string CSyncCheckpoint::strMainPubKey = "04a6817344bc3e36473d2a5ff751ab5cdf51646c2094516bee15d5225390e88c72af1065dd1b357b0550c17930a381a40513d9d373e5864d759a67ad9d56f877e4";
-const std::string CSyncCheckpoint::strTestPubKey = "04e429af4182f28e9086698bf11d136812e8c4e2cf7d32e455f62dadc424da0b3b80f5a8fd8a780f623abd415b9237e526f7465cd5398e2f0d90b77ea34756c9e9";
+const std::string CSyncCheckpoint::strMainPubKey = "04aacc7fa3942b5d2821616864079e4e09c14c9ae368c6a46201e579dd5b7e815b880aa191faf3c28702bc94f41bcdfaa0d97eacc08c1c97a3f601d4376b8f3597";
+const std::string CSyncCheckpoint::strTestPubKey = "0441bbb602c3fb98fd2ade573b1cf813a431d05fb26850e0ad5450428569aa15a10a671701f5588b035a31ea10e9cf3441a4f2d1681fb6677eacaff7aa753af3c3";
 std::string CSyncCheckpoint::strMasterPrivKey = "";
 
 // ppcoin: verify signature of sync-checkpoint message
