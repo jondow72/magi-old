@@ -486,8 +486,6 @@ Value sendcheckpoint(const Array& params, bool fHelp)
             "sendcheckpoint <blockhash>\n"
             "Send a synchronized checkpoint.\n");
 
-    if (!mapArgs.count("-checkpointkey") || CSyncCheckpoint::strMasterPrivKey.empty())
-        throw runtime_error("Not a checkpointmaster node, first set checkpointkey in configuration and restart client. ");
 
     std::string strHash = params[0].get_str();
     uint256 hash(strHash);

@@ -3249,7 +3249,7 @@ bool ProcessBlock(CNode* pfrom, CBlock* pblock)
     printf("ProcessBlock: ACCEPTED\n");
 
     // ppcoin: if responsible for sync-checkpoint send it
-    if (pfrom && !CSyncCheckpoint::strMasterPrivKey.empty())
+
         Checkpoints::SendSyncCheckpoint(Checkpoints::AutoSelectSyncCheckpoint()->GetBlockHash());
 
     return true;
@@ -3534,9 +3534,6 @@ bool LoadBlockIndex(bool fAllowNew)
             return error("LoadBlockIndex() : failed to init sync checkpoint");
     }
 
-    // ppcoin: if checkpoint master key changed must reset sync-checkpoint
-    if (!Checkpoints::CheckCheckpointPubKey())
-        return error("LoadBlockIndex() : failed to reset checkpoint master pubkey");
 
     return true;
 }
